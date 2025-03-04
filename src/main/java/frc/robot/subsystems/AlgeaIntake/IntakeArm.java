@@ -6,35 +6,43 @@ package frc.robot.subsystems.AlgeaIntake;
 
 import frc.robot.Constants;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import frc.robot.subsystems.Remote;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.wpilibj.Encoder;
 import frc.robot.subsystems.Remote.IntakeArmMode;
 
 public class IntakeArm {
-  public static TalonSRX armMotor = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.Intake_Arm);
+	public TalonFX armMotor = new TalonFX(Constants.SubsystemConstants.TalonIDs.FX.Intake_Arm);
 
-  public IntakeArm() {
-    armMotor.setInverted(false);
-    armMotor.setNeutralMode(NeutralMode.Brake);
-  }
+	public IntakeArm() {
+		// armMotor.setInverted(false);
+	}
+	
+	void config() {
+		TalonFXConfiguration config = new TalonFXConfiguration().withMotorOutput(new MotorOutputConfigs().withInverted(InvertedValue.CounterClockwise_Positive));
+		armMotor.getConfigurator().apply(config);
+		armMotor.setNeutralMode(NeutralModeValue.Brake);
+	}
 
-  double modeToPercent(IntakeArmMode mode) {
-    switch (mode) {
-      case Up:
-        return 1.;
-      case Down:
+	double modeToVoltage(IntakeArmMode mode) {
+		switch (mode) {
+			case Up:
+				return 2.;
+			case Down:
+				return -2.;
+			case Idle:
+			default:
+				return 0.;
+		}
+	}
 
-        return -1.;
-      case Idle:
-      default:
-        return 0.;
-    }
-  }
-
-  public void mainloop() {
-    double percent = modeToPercent(Remote.getIntakeArmMode()) * 0.50;
-    armMotor.set(TalonSRXControlMode.PercentOutput, percent);
-  }
+	public void mainloop(IntakeArmMode intakeArmMode) {
+		double voltage = modeToVoltage(intakeArmMode);
+		armMotor.setVoltage(voltage);
+		// armMotor.set(TalonSRXControlMode.PercentOutput, percent);
+	}
 }

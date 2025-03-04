@@ -26,6 +26,7 @@ import frc.robot.subsystems.InnerElevator;
 import frc.robot.subsystems.OuterElevator;
 import frc.robot.subsystems.Remote;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.AlgeaIntake.IntakeArm;
 import frc.robot.subsystems.AlgeaIntake.IntakeWheels;
 import frc.robot.util.UltrasonicSensor;
 
@@ -42,11 +43,13 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
+    public final Remote m_remote = new Remote();
     public final OuterElevator m_outerElevator = new OuterElevator();
     public final InnerElevator m_innerElevator = new InnerElevator();
     public final IntakeWheels m_intakeWheels = new IntakeWheels();
+    public final IntakeArm m_intakeArm = new IntakeArm();
     public final Shooter m_shooter = new Shooter();
-    public final UltrasonicSensor m_ultrasonicSensor = new UltrasonicSensor(0, 1); // TODO: change IDs
+    public final UltrasonicSensor m_ultrasonicSensor = new UltrasonicSensor(1, 0); // TODO: change IDs
 
     //private final CommandXboxController driverJoystick = new CommandXboxController(0);
 

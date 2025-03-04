@@ -6,16 +6,11 @@ package frc.robot.subsystems.AlgeaIntake;
 
 import frc.robot.Constants;
 
-import static frc.robot.Constants.ControllerConstants.driverJoystickDef;
-import static frc.robot.Constants.ControllerConstants.operatorJoystickDef;
-import static frc.robot.Constants.ControllerConstants.operatorJoystickID;
-
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.Remote;
 import frc.robot.subsystems.Remote.IntakeWheelMode;
 
 public class IntakeWheels {
@@ -46,9 +41,8 @@ public class IntakeWheels {
     }
   }
 
-  public void mainloop(){
-    double percent = modeToPercent(Remote.getIntakeWheelMode()) * neoSpeed;
-    //percent = operatorJoystickDef.getLeftTriggerAxis() * 0.3;
+  public void mainloop(IntakeWheelMode intakeWheelMode){
+    double percent = modeToPercent(intakeWheelMode) * neoSpeed;
     leftNeo.set(percent);
     rightNeo.set(percent);
     SmartDashboard.putNumber("intakeWheelOutput", percent);

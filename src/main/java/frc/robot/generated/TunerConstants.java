@@ -24,13 +24,13 @@ public class TunerConstants {
     // The steer motor uses any SwerveModule.SteerRequestType control request with the
     // output type specified by SwerveModuleConstants.SteerMotorClosedLoopOutput
     private static final Slot0Configs steerGains = new Slot0Configs()
-        .withKP(8).withKI(0.8).withKD(0.03)
-        .withKS(0).withKV(0).withKA(0)
+        .withKP(100).withKI(0).withKD(0.5)
+        .withKS(0.1).withKV(1.59).withKA(0)
         .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
     // When using closed-loop control, the drive motor uses the control
     // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     private static final Slot0Configs driveGains = new Slot0Configs()
-        .withKP(1).withKI(0.6).withKD(0.02)
+        .withKP(0.1).withKI(0).withKD(0)
         .withKS(0).withKV(0.124);
 
     // The closed-loop output type to use for the steer motors;
@@ -74,7 +74,7 @@ public class TunerConstants {
 
     // Theoretical free speed (m/s) at 12 V applied output;
     // This needs to be tuned to your individual robot
-    public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(177.43);
+    public static final LinearVelocity kSpeedAt12Volts = MetersPerSecond.of(1.77);
 
     // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
     // This may need to be tuned to your individual robot
@@ -82,7 +82,7 @@ public class TunerConstants {
 
     private static final double kDriveGearRatio = 6.746031746031747;
     private static final double kSteerGearRatio = 12.8;
-    private static final Distance kWheelRadius = Inches.of(75);
+    private static final Distance kWheelRadius = Inches.of(0.75);
 
     private static final boolean kInvertLeftSide = false;
     private static final boolean kInvertRightSide = true;
@@ -133,8 +133,8 @@ public class TunerConstants {
     private static final boolean kFrontLeftSteerMotorInverted = false;
     private static final boolean kFrontLeftEncoderInverted = false;
 
-    private static final Distance kFrontLeftXPos = Inches.of(91.5);
-    private static final Distance kFrontLeftYPos = Inches.of(91.5);
+    private static final Distance kFrontLeftXPos = Inches.of(8.45);
+    private static final Distance kFrontLeftYPos = Inches.of(8.45);
 
     // Front Right
     private static final int kFrontRightDriveMotorId = 7;
@@ -144,8 +144,8 @@ public class TunerConstants {
     private static final boolean kFrontRightSteerMotorInverted = false;
     private static final boolean kFrontRightEncoderInverted = false;
 
-    private static final Distance kFrontRightXPos = Inches.of(91.5);
-    private static final Distance kFrontRightYPos = Inches.of(-91.5);
+    private static final Distance kFrontRightXPos = Inches.of(8.45);
+    private static final Distance kFrontRightYPos = Inches.of(-8.45);
 
     // Back Left
     private static final int kBackLeftDriveMotorId = 3;
@@ -155,8 +155,8 @@ public class TunerConstants {
     private static final boolean kBackLeftSteerMotorInverted = false;
     private static final boolean kBackLeftEncoderInverted = false;
 
-    private static final Distance kBackLeftXPos = Inches.of(-91.5);
-    private static final Distance kBackLeftYPos = Inches.of(91.5);
+    private static final Distance kBackLeftXPos = Inches.of(-8.45);
+    private static final Distance kBackLeftYPos = Inches.of(8.45);
 
     // Back Right
     private static final int kBackRightDriveMotorId = 5;
@@ -166,8 +166,8 @@ public class TunerConstants {
     private static final boolean kBackRightSteerMotorInverted = false;
     private static final boolean kBackRightEncoderInverted = false;
 
-    private static final Distance kBackRightXPos = Inches.of(-91.5);
-    private static final Distance kBackRightYPos = Inches.of(-91.5);
+    private static final Distance kBackRightXPos = Inches.of(-8.45);
+    private static final Distance kBackRightYPos = Inches.of(-8.45);
 
 
     public static final SwerveModuleConstants<TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration> FrontLeft =

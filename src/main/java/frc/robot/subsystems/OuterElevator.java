@@ -3,12 +3,9 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix6.configs.Slot0Configs;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.util.Util;
@@ -27,14 +24,9 @@ public class OuterElevator {
     // private static SimplePID innerPid = new SimplePID("elevatorInner", 12);
     // private static SimplePID outerPid = new SimplePID("elevatorOuter", 12);
 
-    double targetPos = 0.00;
     boolean motorEnabled = false;
 
     public OuterElevator() {}
-
-    public void setTargetPos(double value) {
-        targetPos = value;
-    }
 
     public void setEnabled(boolean value) {
         motorEnabled = value;
@@ -46,7 +38,7 @@ public class OuterElevator {
     }
 
     public void config() {
-        encoder.setDistancePerPulse(0.005 / 6.284 * 2. * Math.PI / 2048.);
+        encoder.setDistancePerPulse(0.005 / 6.284 * 2. * Math.PI / 2048. / 0.454);
         encoder.reset();
 
         motor.setNeutralMode(NeutralMode.Coast);
@@ -58,18 +50,19 @@ public class OuterElevator {
         // motor.setSensorPhase(true);
     }
 
-    double calculateOutput(double currentPos, boolean bottomSwitchReached) {
-        if (motorEnabled && !bottomSwitchReached) {
+    double calculateOutput(double currentPos, double targetPos, boolean bottomSwitchReached) {
+        if (motorEnabled) {
             double factor = calculateFactor(currentPos / maxPos);
             // outerMotor.set(TalonSRXControlMode.PercentOutput, output);
 
-            if (Math.abs(targetPos - currentPos) > 0.01) {
+            if (Math.abs(targetPos - currentPos) > 0.05) {
                 if (currentPos < targetPos) {
                     // go up
                     return 0.60 * factor;
                 } else {
                     // go down
-                    return 0.35 * factor;
+                    if (bottomSwitchReached) return 0;
+                    return -0.35 * factor;
                 }
             } else {
                 return 0;
@@ -78,21 +71,34 @@ public class OuterElevator {
             return 0;
         }
     }
+    
+    double progressToPos(double progress) {
+        if (progress > 0.4) {
+            return 1.0;
+        } else {
+            return Util.map(0.0, 0.4, progress, 0.0, 1.0);
+        }
+    }
 
-    public void mainloop() {
+    // return true if outer is using current
+    public boolean mainloop(double targetProgress) {
+        double targetPos = progressToPos(targetProgress);
         double currentPos = encoder.getDistance();
         boolean bottomSwitchReached = !bottomLimitSwitch.get();
 
-        double output = calculateOutput(currentPos, bottomSwitchReached);
+        double output = calculateOutput(currentPos, targetPos, bottomSwitchReached);
         motor.set(TalonSRXControlMode.PercentOutput, output);
-        
+
         SmartDashboard.putNumber("elevatorOuterOutput", output);
         SmartDashboard.putBoolean("elevatorBottomSwitch", bottomSwitchReached);
-
+        
         // double innerVoltage = innerPid.getSignal(innerCurrentPos);
         // innerMotor.set(ControlMode.PercentOutput, 0, DemandType.Neutral, innerVoltage);
-
+        
         // outerMotor.set(ControlMode.Position, outerTargetPos);
-        SmartDashboard.putNumber("elevatorEncoder", currentPos);
+        SmartDashboard.putNumber("elevatorOuterTarget", targetPos);
+        SmartDashboard.putNumber("elevatorOuterCurrent", currentPos);
+
+        return (Math.abs(output) > 0.01);
     }
 }

@@ -23,4 +23,9 @@ public final class Util {
     public static double clamp(double value, double lower, double upper) {
         return Math.max(Math.min(Math.abs(value), 1), 0);
     }
+
+    public static double deadband(double value, double epsilon) {
+        if (Math.abs(value) < epsilon) return 0;
+        else return value;
+    }
 }

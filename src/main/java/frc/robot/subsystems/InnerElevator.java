@@ -1,23 +1,17 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.ControllerConstants.operatorJoystick;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix6.configs.Slot0Configs;
-
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.util.Util;
 
-import frc.robot.subsystems.Remote;
 import frc.robot.subsystems.Remote.ElevatorMode;
-
 
 public class InnerElevator {
     private final TalonSRX motor = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.Elevator_Inner);
@@ -31,12 +25,12 @@ public class InnerElevator {
     // private static SimplePID innerPid = new SimplePID("elevatorInner", 12);
     // private static SimplePID outerPid = new SimplePID("elevatorOuter", 12);
 
-    double targetPos = 0.00;
     boolean motorEnabled = false;
 
     double getPrefDouble(String key, double backup) {
         return Preferences.getDouble("elevPid_" + key, backup);
     }
+
     void setPrefDouble(String key, double value) {
         Preferences.setDouble("elevPid_" + key, value);
     }
@@ -51,25 +45,25 @@ public class InnerElevator {
         config();
     }
 
-    public void setTargetPos(double value) {
-        targetPos = value;
-    }
-
-    public double modeToPos(ElevatorMode mode){
-        switch (mode) {
-            case L1:
-              return Constants.ReefLayers.L1;
-            case L2: // TODO
-              return Constants.ReefLayers.L2;
-            case L3:
-                return Constants.ReefLayers.L3;
-            case L4:
-                return Constants.ReefLayers.L4;
-            case Idle:
-            default:
-             return 0.;
-          }
-    }
+    /*
+     * public double modeToPos(ElevatorMode mode){
+     * switch (mode) {
+     * case Manual:
+     * return 0.;
+     * case L1:
+     * return Constants.ReefLayers.L1;
+     * case L2: // TODO
+     * return Constants.ReefLayers.L2;
+     * case L3:
+     * return Constants.ReefLayers.L3;
+     * case L4:
+     * return Constants.ReefLayers.L4;
+     * case Idle:
+     * default:
+     * return 0.;
+     * }
+     * }
+     */
 
     public void setEnabled(boolean value) {
         motorEnabled = value;
@@ -83,9 +77,11 @@ public class InnerElevator {
     public void config() {
         motor.setNeutralMode(NeutralMode.Coast);
 
-        double dpr = 23 * 1.5; // distance per revolution
+        double dpr = 23 * 1.5 / 43.15; // distance per revolution
         double ppr = 1024.; // pulses per revolution
         encoder.setDistancePerPulse(dpr / ppr);
+        encoder.reset();
+        encoder.setReverseDirection(true);
 
         double kP = getPrefDouble("outerP", 0.01);
         double kI = getPrefDouble("outerI", 0.00);
@@ -96,39 +92,71 @@ public class InnerElevator {
         pid.setD(kD);
     }
 
-    double calculateOutput(double currentPos) {
+    double calculateOutput(double currentPos, double targetPos) {
         if (motorEnabled) {
             return pid.calculate(currentPos, targetPos);
 
-            /* double factor = calculateFactor(currentPos / maxPos);
-            // outerMotor.set(TalonSRXControlMode.PercentOutput, output);
-
-            if (Math.abs(targetPos - currentPos) > 0.01) {
-                if (currentPos < targetPos) {
-                    // go up
-                    return 0.60 * factor;
-                } else {
-                    // go down
-                    return 0.35 * factor;
-                }
-            } else {
-                return 0;
-            } */
+            /*
+             * double factor = calculateFactor(currentPos / maxPos);
+             * // outerMotor.set(TalonSRXControlMode.PercentOutput, output);
+             * 
+             * if (Math.abs(targetPos - currentPos) > 0.01) {
+             * if (currentPos < targetPos) {
+             * // go up
+             * return 0.60 * factor;
+             * } else {
+             * // go down
+             * return 0.35 * factor;
+             * }
+             * } else {
+             * return 0;
+             * }
+             */
         } else {
             return 0;
         }
     }
 
-    public void mainloop() {
+    double progressToPos(double progress) {
+        if (progress < 0.4) {
+            return 0;
+        } else {
+            return Util.map(0.4, 1.0, progress, 0.0, 1.0);
+        }
+    }
+
+    public void mainloop(double targetProgress, boolean canWork) {
         double currentPos = encoder.getDistance();
-        setTargetPos(modeToPos(Remote.getElevatorMode()));
-        
+        double targetPos = progressToPos(targetProgress);
 
-        double output = calculateOutput(currentPos);
-        output = Util.clamp(output, 0, 0.9);
+        // double output = calculateOutput(currentPos, targetPos);
+        // output = Util.clamp(output, 0.05, 0.85);
 
+        double output = 0;
+        // boolean atBottom = currentPos < 0.05;
+        // boolean atTop = currentPos > 0.95;
+
+        if (canWork) {
+            double downOutput = Util.lerp(currentPos, 0.05, 0.03);
+            double keepOutput = 0.45;
+            double upOutput = Util.lerp(currentPos, 0.90, 0.65);
+
+            if (Math.abs(currentPos - targetPos) > 0.08) {
+                boolean mustGoUp = currentPos < targetPos;
+                output = mustGoUp ? upOutput : downOutput;
+            } else {
+                output = keepOutput;
+            }
+        } else {
+            output = 0;
+        }
+
+        // hard limit output
+        output = Util.clamp(output, 0.05, 0.85);
         motor.set(ControlMode.PercentOutput, output);
+
         SmartDashboard.putNumber("elevatorInnerEncoder", currentPos);
+        SmartDashboard.putNumber("elevatorInnerTarget", targetPos);
         SmartDashboard.putNumber("elevatorInnerOutput", output);
     }
 }
