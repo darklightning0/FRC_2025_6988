@@ -21,8 +21,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 public final class Constants {
 
   public static class ControllerConstants {
-      public static final int kDriverControllerPort = 0;
-      public static final int kOperatorControllerPort = 1;
+      public static final int kDriverControllerPort = 1;
+      public static final int kOperatorControllerPort = 0;
 
       public static final int driverJoystickID = 1;
       public static final int operatorJoystickID = 0;

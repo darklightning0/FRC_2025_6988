@@ -24,7 +24,7 @@ enum DriveMode {
 
 }
 
-public final class Remote {
+public class Remote {
     //Intake kol hareketleri
     public static enum IntakeArmMode {
         Idle,
@@ -56,7 +56,7 @@ public final class Remote {
     // Constructor
     // Here we will be creating private constructor
     // restricted to this class itself
-    private Remote() {
+    public Remote() {
         
     }
 
@@ -112,21 +112,22 @@ public final class Remote {
     public static void mainloop() {
         
         //Input -> intake arm command
-        if(driverJoystickDef.isConnected()){
-            if(operatorJoystickDef.getRawButton(RemoteOperatorButtons.intakeUp)){
+        if(operatorJoystickDef.isConnected()){
+            if(operatorJoystickDef.getPOV()==0){
                 input_armIntake=IntakeArmMode.Up;
             }
-            else if(operatorJoystickDef.getRawButton(RemoteOperatorButtons.intakeDown)){
+            else if(operatorJoystickDef.getPOV()==180){
                 input_armIntake=IntakeArmMode.Down;
             }
             else{input_armIntake=IntakeArmMode.Idle;}
         }
         //input -> intake wheel command
-        if(driverJoystickDef.isConnected()){
-            if(operatorJoystickDef.getRawButton(RemoteOperatorButtons.intakeAlgeaIn)){
+        if(operatorJoystickDef.isConnected()){
+            if(operatorJoystickDef.getPOV()==270){
                 input_wheelIntake=IntakeWheelMode.In;
+                SmartDashboard.putNumber("A pressed",1 );
             }
-            else if(operatorJoystickDef.getRawButton(RemoteOperatorButtons.intakeAlgeaShoot)){
+            else if(operatorJoystickDef.getPOV()==90){
                 input_wheelIntake=IntakeWheelMode.Shoot;
             }
             else{input_wheelIntake=IntakeWheelMode.Idle;}
@@ -146,7 +147,7 @@ public final class Remote {
                 input_ElevatorMode=ElevatorMode.L4;
             }
             
-
+            
 
         }
 

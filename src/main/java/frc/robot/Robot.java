@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.OuterElevator;
 
+import frc.robot.subsystems.Remote;
+
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
@@ -65,10 +67,12 @@ public class Robot extends TimedRobot {
     double ultrasonicDistance = m_robotContainer.m_ultrasonicSensor.getDistanceCm();
     boolean objectSeen = ultrasonicDistance < Constants.SubsystemConstants.Other.ULTRASONIC_DETECTION_THRESHOLD_CM;
     
+
+    Remote.mainloop();
     // Inner Elevator PID Tuning
-    if (driverJoystickDef.getYButton()) {
-      m_robotContainer.m_innerElevator.config();
-    }
+   // if (driverJoystickDef.getYButton()) {
+     // m_robotContainer.m_innerElevator.config();
+    //}
     // Inner Elevator
     m_robotContainer.m_innerElevator.setEnabled(false);
     //m_robotContainer.m_innerElevator.setTargetPos(0.40);
@@ -82,7 +86,7 @@ public class Robot extends TimedRobot {
     // Shooter
     m_robotContainer.m_shooter.mainloop(objectSeen);
     
-    // Intake wheels
+    // Intake wheel
     m_robotContainer.m_intakeWheels.mainloop();
   }
 

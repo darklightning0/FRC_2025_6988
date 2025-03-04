@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import static frc.robot.Constants.ControllerConstants.driverJoystick;
 
+import java.net.FileNameMap;
+
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.InnerElevator;
@@ -40,7 +42,6 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    public final Remote m_remote = new Remote();
     public final OuterElevator m_outerElevator = new OuterElevator();
     public final InnerElevator m_innerElevator = new InnerElevator();
     public final IntakeWheels m_intakeWheels = new IntakeWheels();
