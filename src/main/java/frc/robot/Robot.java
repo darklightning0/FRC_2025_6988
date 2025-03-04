@@ -4,10 +4,12 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.ControllerConstants.driverJoystickDef;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.OuterElevator;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -52,12 +54,36 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    Elevator.config();
+    m_robotContainer.m_innerElevator.config();
+    m_robotContainer.m_outerElevator.config();
   }
 
   @Override
   public void teleopPeriodic() {
-    Elevator.mainloop();
+    // Check ultrasonic sensor
+    m_robotContainer.m_ultrasonicSensor.measureDistance();
+    double ultrasonicDistance = m_robotContainer.m_ultrasonicSensor.getDistanceCm();
+    boolean objectSeen = ultrasonicDistance < Constants.SubsystemConstants.Other.ULTRASONIC_DETECTION_THRESHOLD_CM;
+    
+    // Inner Elevator PID Tuning
+    if (driverJoystickDef.getYButton()) {
+      m_robotContainer.m_innerElevator.config();
+    }
+    // Inner Elevator
+    m_robotContainer.m_innerElevator.setEnabled(false);
+    //m_robotContainer.m_innerElevator.setTargetPos(0.40);
+    m_robotContainer.m_innerElevator.mainloop();
+    
+    // Outer Elevator
+    m_robotContainer.m_outerElevator.setEnabled(false);
+    m_robotContainer.m_outerElevator.setTargetPos(0.40);
+    m_robotContainer.m_outerElevator.mainloop();
+
+    // Shooter
+    m_robotContainer.m_shooter.mainloop(objectSeen);
+    
+    // Intake wheels
+    m_robotContainer.m_intakeWheels.mainloop();
   }
 
   @Override

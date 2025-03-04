@@ -38,10 +38,19 @@ public final class Remote {
         Shoot,
     }
 
+    public static enum ElevatorMode{
+        Idle,
+        L1,
+        L2,
+        L3,
+        L4,
+    }
+
     private static Remote single_instance = null;
 
     static IntakeArmMode input_armIntake = IntakeArmMode.Idle;
     static IntakeWheelMode input_wheelIntake = IntakeWheelMode.Idle;
+    static ElevatorMode input_ElevatorMode = ElevatorMode.Idle;
     
     
     // Constructor
@@ -65,6 +74,10 @@ public final class Remote {
 
     public static IntakeWheelMode getIntakeWheelMode(){
         return input_wheelIntake;
+    }
+
+    public static ElevatorMode getElevatorMode(){
+        return input_ElevatorMode;
     }
 
     
@@ -117,6 +130,24 @@ public final class Remote {
                 input_wheelIntake=IntakeWheelMode.Shoot;
             }
             else{input_wheelIntake=IntakeWheelMode.Idle;}
+        }
+
+        if(operatorJoystickDef.isConnected()){
+            if(operatorJoystickDef.getAButton()){
+                input_ElevatorMode=ElevatorMode.L1;
+            }
+            else if(operatorJoystickDef.getBButton()){
+                input_ElevatorMode=ElevatorMode.L2;
+            }
+            else if(operatorJoystickDef.getXButton()){
+                input_ElevatorMode=ElevatorMode.L3;
+            }
+            else if(operatorJoystickDef.getYButton()){
+                input_ElevatorMode=ElevatorMode.L4;
+            }
+            
+
+
         }
 
     }

@@ -20,6 +20,12 @@ import static frc.robot.Constants.ControllerConstants.driverJoystick;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.InnerElevator;
+import frc.robot.subsystems.OuterElevator;
+import frc.robot.subsystems.Remote;
+import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.AlgeaIntake.IntakeWheels;
+import frc.robot.util.UltrasonicSensor;
 
 public class RobotContainer {
     private double MaxSpeed = 0.5*TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed NOT DEFAULT VALUE
@@ -33,6 +39,13 @@ public class RobotContainer {
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
+
+    public final Remote m_remote = new Remote();
+    public final OuterElevator m_outerElevator = new OuterElevator();
+    public final InnerElevator m_innerElevator = new InnerElevator();
+    public final IntakeWheels m_intakeWheels = new IntakeWheels();
+    public final Shooter m_shooter = new Shooter();
+    public final UltrasonicSensor m_ultrasonicSensor = new UltrasonicSensor(0, 1); // TODO: change IDs
 
     //private final CommandXboxController driverJoystick = new CommandXboxController(0);
 
