@@ -1,9 +1,11 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.ControllerConstants.driverJoystick;
 import static frc.robot.Constants.ControllerConstants.operatorJoystick;
 import static frc.robot.Constants.ControllerConstants.operatorJoystickDef;
 
 import frc.robot.Constants;
+import frc.robot.Constants.SubsystemConstants.RemoteOperatorButtons;
 import frc.robot.util.DistanceControl;
 import frc.robot.util.Util;
 
@@ -43,10 +45,15 @@ public class Remote {
     ShooterMode shooter_mode = ShooterMode.Idle;
     // static UltrasonicSensor ultrasonicSensor = new UltrasonicSensor(0, 0);
     // ElevatorMode input_elevatorMode = ElevatorMode.Idle;
-    double input_elevatorTarget = 0;
+    double input_innerElevatorTarget = 0;
+    double input_outerElevatorTarget = 0;
     boolean elevator_manual = false;
 
-    DistanceControl innerElevatorProgressControl = new DistanceControl(0.0, 1.0);
+    boolean elevator_manualHome = false;
+    boolean elevator_manualHomePressed = false;
+
+    DistanceControl innerElevatorProgressControl = new DistanceControl(0.0, 0.98);
+    DistanceControl outerElevatorProgressControl = new DistanceControl(0.0, 0.98);
 
     // Constructor
     // Here we will be creating private constructor
@@ -67,8 +74,11 @@ public class Remote {
         return input_wheelIntake;
     }
 
-    public double getElevatorTarget() {
-        return input_elevatorTarget;
+    public double getInnerElevatorTarget() {
+        return input_innerElevatorTarget;
+    }
+    public double getOuterElevatorTarget() {
+        return input_outerElevatorTarget;
     }
 
     public boolean getElevatorManual() {
@@ -77,6 +87,14 @@ public class Remote {
 
     public void config() {
         innerElevatorProgressControl.resetWithValue(0);
+    }
+
+    public boolean getHomeButtonPressed() {
+        return elevator_manualHomePressed;
+    }
+
+    public boolean getHomeButton() {
+        return elevator_manualHome;
     }
 
     // pos. direction: 0 ~ 1
@@ -115,24 +133,33 @@ public class Remote {
             innerElevatorProgressControl.resetWithValue(0);
         }
 
+
+        elevator_manualHomePressed = operatorJoystickDef.getRawButtonPressed(RemoteOperatorButtons.home);
+        elevator_manualHome = operatorJoystickDef.getRawButton(RemoteOperatorButtons.home);
+
+
+
         // Elevator
         if (elevator_manual) {
             double innerElevatorVelocity = Util.deadband(operatorJoystick.getRightY(), 0.12) * -0.3;
-            double innerElevatorTarget = innerElevatorProgressControl.mainloop(innerElevatorVelocity);
-
-            input_elevatorTarget = innerElevatorTarget;
+            input_innerElevatorTarget = innerElevatorProgressControl.mainloop(innerElevatorVelocity);
+            double outerElevatorVelocity = Util.deadband(operatorJoystick.getLeftY(), 0.12) * -0.3;
+            input_outerElevatorTarget = outerElevatorProgressControl.mainloop(outerElevatorVelocity);
         } else {
             if (operatorJoystickDef.isConnected()) {
                 if (operatorJoystickDef.getAButton()) {
-                    input_elevatorTarget = Constants.ReefLayers.L1;
+                    input_innerElevatorTarget = Constants.ReefLayers.L1;
+                    input_outerElevatorTarget = 0;
                 } else if (operatorJoystickDef.getBButton()) {
-                    input_elevatorTarget = Constants.ReefLayers.L2;
+                    input_innerElevatorTarget = Constants.ReefLayers.L2;
+                    input_outerElevatorTarget = 0;
                 } else if (operatorJoystickDef.getXButton()) {
-                    input_elevatorTarget = Constants.ReefLayers.L3;
+                    input_innerElevatorTarget = Constants.ReefLayers.L3;
+                    input_outerElevatorTarget = 0;
                 } else if (operatorJoystickDef.getYButton()) {
-                    input_elevatorTarget = Constants.ReefLayers.L4;
+                    input_innerElevatorTarget = Constants.ReefLayers.L4;
+                    input_outerElevatorTarget = 0;
                 }
-
             }
         }
 

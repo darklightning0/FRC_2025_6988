@@ -67,10 +67,9 @@ public final class Constants {
 		public static class RemoteOperatorButtons {
 			public static final int intakeUp = 1;
 			public static final int intakeDown = 2;
-			public static final int intakeAlgeaIn = 8;
-			public static final int intakeAlgeaShoot = 4;
-			public static final int shooter = 5;
-			public static final int coralShoot = 5;
+			// public static final int intakeAlgeaIn = 7;
+			// public static final int intakeAlgeaShoot = 8;
+			public static final int home = 7;
 		}
 
 		public static class AMTEncoder {

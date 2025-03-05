@@ -18,7 +18,7 @@ public class IntakeWheels {
   public final SparkMax rightNeo = new SparkMax(Constants.SubsystemConstants.TalonIDs.Spark.Intake_Right, MotorType.kBrushless);
   
   
-  private final double neoSpeed = 0.2;
+  private final double neoSpeed = 0.35;
 
 
   public IntakeWheels() {

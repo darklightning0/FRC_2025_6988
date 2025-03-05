@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -45,6 +47,12 @@ public class Robot extends TimedRobot {
 	public void disabledExit() {
 	}
 
+	double autonomousTimeBegin = 0;
+
+	double getTime() {
+		return ((double)System.currentTimeMillis()) / 1000.;
+	}
+
 	@Override
 	public void autonomousInit() {
 		m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -52,10 +60,28 @@ public class Robot extends TimedRobot {
 		if (m_autonomousCommand != null) {
 			m_autonomousCommand.schedule();
 		}
+
+		autonomousTimeBegin = getTime();
 	}
 
 	@Override
 	public void autonomousPeriodic() {
+		double time = getTime() - autonomousTimeBegin;
+
+		ShooterMode shooterMode = ShooterMode.Idle;
+
+
+		// AUTONOMOUS PHASES
+		if (time > 2.0 && time < 5.0) {
+			shooterMode = ShooterMode.Shoot;
+		}
+
+
+
+		// Shooter
+		m_robotContainer.m_shooter.mainloop(shooterMode);
+
+
 		/*
 		 * if (time < 5) {
 		 * ...
@@ -68,6 +94,8 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousExit() {
 	}
+
+	Pigeon2 pigeon2 = new Pigeon2(21);
 
 	@Override
 	public void teleopInit() {
@@ -83,7 +111,8 @@ public class Robot extends TimedRobot {
 	public void teleopPeriodic() {
 
 		m_robotContainer.m_remote.mainloop();
-		double elevatorTarget = m_robotContainer.m_remote.getElevatorTarget();
+		double innerElevatorTarget = m_robotContainer.m_remote.getInnerElevatorTarget();
+		double outerElevatorTarget = m_robotContainer.m_remote.getOuterElevatorTarget();
 		IntakeWheelMode intakeWheelMode = m_robotContainer.m_remote.getIntakeWheelMode();
 		IntakeArmMode intakeArmMode = m_robotContainer.m_remote.getIntakeArmMode();
 		ShooterMode shooterMode = m_robotContainer.m_remote.getShooterMode();
@@ -91,7 +120,8 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putString("input_shooterMode", shooterMode.toString());
 		SmartDashboard.putString("input_intakeWheelMode", intakeWheelMode.toString());
 		SmartDashboard.putString("input_intakeArmMode", intakeArmMode.toString());
-		SmartDashboard.putNumber("input_elevatorTarget", elevatorTarget);
+		SmartDashboard.putNumber("input_innerElevatorTarget", innerElevatorTarget);
+		SmartDashboard.putNumber("input_outerElevatorTarget", outerElevatorTarget);
 		SmartDashboard.putBoolean("input_elevatorManual", m_robotContainer.m_remote.getElevatorManual());
 
 		// Check ultrasonic sensor
@@ -108,12 +138,14 @@ public class Robot extends TimedRobot {
 
 		// Outer Elevator
 		m_robotContainer.m_outerElevator.setEnabled(true);
-		boolean outerElevatorWorking = m_robotContainer.m_outerElevator.mainloop(elevatorTarget);
+		m_robotContainer.m_outerElevator.mainloop(outerElevatorTarget, m_robotContainer.m_remote.getHomeButtonPressed());
+
+		SmartDashboard.putNumber("pigeonYaw", pigeon2.getYaw().getValueAsDouble());
 
 		// Inner Elevator
 		m_robotContainer.m_innerElevator.setEnabled(false);
 		// m_robotContainer.m_innerElevator.setTargetPos(0.40);
-		m_robotContainer.m_innerElevator.mainloop(elevatorTarget, !outerElevatorWorking);
+		m_robotContainer.m_innerElevator.mainloop(innerElevatorTarget, m_robotContainer.m_remote.getHomeButton());
 
 		// Shooter
 		m_robotContainer.m_shooter.mainloop(shooterMode);

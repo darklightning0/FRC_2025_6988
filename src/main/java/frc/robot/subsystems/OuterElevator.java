@@ -23,6 +23,7 @@ public class OuterElevator {
 
     // private static SimplePID innerPid = new SimplePID("elevatorInner", 12);
     // private static SimplePID outerPid = new SimplePID("elevatorOuter", 12);
+    boolean bottomLimitSet = false;
 
     boolean motorEnabled = false;
 
@@ -41,6 +42,8 @@ public class OuterElevator {
         encoder.setDistancePerPulse(0.005 / 6.284 * 2. * Math.PI / 2048. / 0.454);
         encoder.reset();
 
+        bottomLimitSet = false;
+
         motor.setNeutralMode(NeutralMode.Coast);
         motor.setInverted(true);
         // motor.config_kP(0, getPrefDouble("outerP", 0.01));
@@ -55,7 +58,7 @@ public class OuterElevator {
             double factor = calculateFactor(currentPos / maxPos);
             // outerMotor.set(TalonSRXControlMode.PercentOutput, output);
 
-            if (Math.abs(targetPos - currentPos) > 0.05) {
+            if (Math.abs(targetPos - currentPos) > 0.03) {
                 if (currentPos < targetPos) {
                     // go up
                     return 0.60 * factor;
@@ -65,6 +68,11 @@ public class OuterElevator {
                     return -0.35 * factor;
                 }
             } else {
+                if (targetPos < 0.01) {
+                    // go a little down
+                    if (bottomSwitchReached) return 0;
+                    return -0.35 * factor;
+                }
                 return 0;
             }
         } else {
@@ -73,18 +81,31 @@ public class OuterElevator {
     }
     
     double progressToPos(double progress) {
-        if (progress > 0.4) {
-            return 1.0;
+        if (progress < 0.4) {
+            return 0;
         } else {
-            return Util.map(0.0, 0.4, progress, 0.0, 1.0);
+            return Util.map(0.4, 1.0, progress, 0.0, 1.0);
         }
     }
 
     // return true if outer is using current
-    public boolean mainloop(double targetProgress) {
-        double targetPos = progressToPos(targetProgress);
-        double currentPos = encoder.getDistance();
+    public boolean mainloop(double targetPos, boolean shouldHome) {
         boolean bottomSwitchReached = !bottomLimitSwitch.get();
+
+        if (shouldHome) bottomLimitSet = true;
+
+        if (!bottomLimitSet) {
+            if (bottomSwitchReached) {
+                encoder.reset();
+                bottomLimitSet = true;
+                motor.set(TalonSRXControlMode.PercentOutput, 0.);
+                return true;
+            }
+            motor.set(TalonSRXControlMode.PercentOutput, -0.20);
+            return true;
+        }
+
+        double currentPos = encoder.getDistance();
 
         double output = calculateOutput(currentPos, targetPos, bottomSwitchReached);
         motor.set(TalonSRXControlMode.PercentOutput, output);

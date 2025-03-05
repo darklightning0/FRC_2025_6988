@@ -95,16 +95,21 @@ public class InnerElevator {
     }
 
     double progressToPos(double progress) {
-        if (progress < 0.4) {
-            return 0;
+        if (progress > 0.4) {
+            return 1.0;
         } else {
-            return Util.map(0.4, 1.0, progress, 0.0, 1.0);
+            return Util.map(0.0, 0.4, progress, 0.0, 1.0);
         }
     }
 
-    public void mainloop(double targetProgress, boolean canWork) {
+    public void mainloop(double targetPos, boolean shouldHome) {
+        if (shouldHome) {
+            motor.set(ControlMode.PercentOutput, 0);
+            encoder.reset();
+            return;
+        }
+
         double currentPos = encoder.getDistance();
-        double targetPos = progressToPos(targetProgress);
 
         // double output = calculateOutput(currentPos, targetPos);
         // output = Util.clamp(output, 0.05, 0.85);
@@ -113,23 +118,22 @@ public class InnerElevator {
         // boolean atBottom = currentPos < 0.05;
         // boolean atTop = currentPos > 0.95;
 
-        if (canWork) {
-            double downOutput = Util.lerp(currentPos, 0.05, 0.03);
-            double keepOutput = 0.45;
-            double upOutput = Util.lerp(currentPos, 0.90, 0.65);
+        // asagi gitmek icin gereken output
+        double downOutput = Util.lerp(currentPos, 0.025, 0.020);
+        // yerinde durmak icin gereken output
+        double keepOutput = 0.45;
+        // yukari gitmek icin gereken output
+        double upOutput = Util.lerp(currentPos, 0.90, 0.75);
 
-            if (Math.abs(currentPos - targetPos) > 0.08) {
-                boolean mustGoUp = currentPos < targetPos;
-                output = mustGoUp ? upOutput : downOutput;
-            } else {
-                output = keepOutput;
-            }
+        if (Math.abs(currentPos - targetPos) > 0.08) {
+            boolean mustGoUp = currentPos < targetPos;
+            output = mustGoUp ? upOutput : downOutput;
         } else {
-            output = 0;
+            output = keepOutput;
         }
 
         // hard limit output
-        output = Util.clamp(output, 0.05, 0.85);
+        output = Util.clamp(output, 0.020, 0.90);
         motor.set(ControlMode.PercentOutput, output);
 
         SmartDashboard.putNumber("elevatorInnerCurrent", currentPos);
