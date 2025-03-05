@@ -4,10 +4,7 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 /**
@@ -39,11 +36,12 @@ public final class Constants {
 	}
 	// ALGEA INTAKE
 
+	// must be between 0 and 1
 	public static class ReefLayers {
-		public static final double L1 = 0.46 / 1.83;
-		public static final double L2 = 0.81 / 1.83;
-		public static final double L3 = 1.21 / 1.83;
-		public static final double L4 = 1.83 / 1.83;
+		public static final double L1 = 0.2513;
+		public static final double L2 = 0.4426;
+		public static final double L3 = 0.6612;
+		public static final double L4 = 0.9500;
 	}
 
 	// CORAL SHOOTER
@@ -66,15 +64,6 @@ public final class Constants {
 			}
 		}
 
-		public static class RemoteButtons {
-			/*
-			 * 
-			 * 
-			 * 
-			 * 
-			 */
-		}
-
 		public static class RemoteOperatorButtons {
 			public static final int intakeUp = 1;
 			public static final int intakeDown = 2;
@@ -82,17 +71,11 @@ public final class Constants {
 			public static final int intakeAlgeaShoot = 4;
 			public static final int shooter = 5;
 			public static final int coralShoot = 5;
-
 		}
 
 		public static class AMTEncoder {
 			public static final int Elevator_Outer = 0;
 			public static final int Elevator_Inner = 0;
-		}
-
-		public static class Other {
-			public static final double ULTRASONIC_DETECTION_THRESHOLD_CM = 2.0; // TODO
-
 		}
 
 	}

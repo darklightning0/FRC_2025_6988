@@ -18,8 +18,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import static frc.robot.Constants.ControllerConstants.driverJoystick;
 
-import java.net.FileNameMap;
-
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.InnerElevator;
@@ -28,7 +26,6 @@ import frc.robot.subsystems.Remote;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.AlgeaIntake.IntakeArm;
 import frc.robot.subsystems.AlgeaIntake.IntakeWheels;
-import frc.robot.util.UltrasonicSensor;
 
 public class RobotContainer {
     private double MaxSpeed = 0.5*TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed NOT DEFAULT VALUE
@@ -49,7 +46,7 @@ public class RobotContainer {
     public final IntakeWheels m_intakeWheels = new IntakeWheels();
     public final IntakeArm m_intakeArm = new IntakeArm();
     public final Shooter m_shooter = new Shooter();
-    public final UltrasonicSensor m_ultrasonicSensor = new UltrasonicSensor(1, 0); // TODO: change IDs
+    // public final UltrasonicSensor m_ultrasonicSensor = new UltrasonicSensor(1, 0);
 
     //private final CommandXboxController driverJoystick = new CommandXboxController(0);
 

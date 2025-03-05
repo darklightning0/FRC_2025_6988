@@ -34,19 +34,8 @@ public class Remote {
 
         Idle,
         Shoot,
-        See,
-        Hold,
         Reverse,
 
-    }
-
-    public static enum ElevatorMode {
-        Idle,
-        Manual,
-        L1,
-        L2,
-        L3,
-        L4,
     }
 
     IntakeArmMode input_armIntake = IntakeArmMode.Idle;
@@ -82,6 +71,10 @@ public class Remote {
         return input_elevatorTarget;
     }
 
+    public boolean getElevatorManual() {
+        return elevator_manual;
+    }
+
     public void config() {
         innerElevatorProgressControl.resetWithValue(0);
     }
@@ -115,11 +108,14 @@ public class Remote {
     // private static boolean takeoverEnabled = false;
 
     public void mainloop() {
+        
+        // Elevator Manual Toggle
         if (operatorJoystickDef.getRightBumperButtonPressed()) {
             elevator_manual = !elevator_manual;
             innerElevatorProgressControl.resetWithValue(0);
         }
 
+        // Elevator
         if (elevator_manual) {
             double innerElevatorVelocity = Util.deadband(operatorJoystick.getRightY(), 0.12) * -0.3;
             double innerElevatorTarget = innerElevatorProgressControl.mainloop(innerElevatorVelocity);
@@ -129,48 +125,27 @@ public class Remote {
             if (operatorJoystickDef.isConnected()) {
                 if (operatorJoystickDef.getAButton()) {
                     input_elevatorTarget = Constants.ReefLayers.L1;
-                    // input_elevatorMode = ElevatorMode.L1;
                 } else if (operatorJoystickDef.getBButton()) {
                     input_elevatorTarget = Constants.ReefLayers.L2;
-                    // input_elevatorMode = ElevatorMode.L2;
                 } else if (operatorJoystickDef.getXButton()) {
                     input_elevatorTarget = Constants.ReefLayers.L3;
-                    // input_elevatorMode = ElevatorMode.L3;
                 } else if (operatorJoystickDef.getYButton()) {
                     input_elevatorTarget = Constants.ReefLayers.L4;
-                    // input_elevatorMode = ElevatorMode.L4;
                 }
 
             }
         }
 
-        // Elevator
-
-        /* if (operatorJoystickDef.getRightBumperButton() && input_elevatorMode != ElevatorMode.Manual) {
-            input_elevatorMode = ElevatorMode.Manual;
-        } else if (operatorJoystickDef.getRightBumperButton() && input_elevatorMode == ElevatorMode.Manual) {
-            input_elevatorMode = ElevatorMode.Idle;
-        } */
 
         // Shooter
 
-        boolean objectSeen = false; // ultrasonicSensor.getDistanceCm() < 5;
-
-        shooter_mode = (operatorJoystickDef.getRightTriggerAxis() > 0.1) ? ShooterMode.Shoot : ShooterMode.Idle;
-        shooter_mode = (operatorJoystickDef.getLeftTriggerAxis() > 0.1) ? ShooterMode.Reverse : ShooterMode.Idle;
-
-
-        /* if (operatorJoystickDef.getRightTriggerAxis() > 0.1 && objectSeen) {
-            shooter_mode = ShooterMode.See;
-        } else if (operatorJoystickDef.getRightTriggerAxis() > 0.1 && true) {
+         if (operatorJoystickDef.getRightTriggerAxis() > 0.1) {
             shooter_mode = ShooterMode.Shoot;
-        } else if (operatorJoystickDef.getRightTriggerAxis() < 0.1 && objectSeen) {
-            shooter_mode = ShooterMode.Hold;
         } else if (operatorJoystickDef.getLeftTriggerAxis() > 0.1) {
             shooter_mode = ShooterMode.Reverse;
         } else {
             shooter_mode = ShooterMode.Idle;
-        } */
+        } 
 
         // Input -> intake arm command
         if (operatorJoystickDef.isConnected()) {

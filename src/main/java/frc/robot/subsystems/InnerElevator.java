@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.ControllerConstants.operatorJoystick;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -11,14 +10,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.util.Util;
 
-import frc.robot.subsystems.Remote.ElevatorMode;
-
 public class InnerElevator {
     private final TalonSRX motor = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.Elevator_Inner);
 
     private final PIDController pid = new PIDController(0, 0, 0);
 
-    private final double maxPos = 0.80; // 0.80 meters
+    // private final double maxPos = 0.80; // 0.80 meters
 
     private final Encoder encoder = new Encoder(6, 7);
 
@@ -44,26 +41,6 @@ public class InnerElevator {
         setPrefDouble("outerD", kD);
         config();
     }
-
-    /*
-     * public double modeToPos(ElevatorMode mode){
-     * switch (mode) {
-     * case Manual:
-     * return 0.;
-     * case L1:
-     * return Constants.ReefLayers.L1;
-     * case L2: // TODO
-     * return Constants.ReefLayers.L2;
-     * case L3:
-     * return Constants.ReefLayers.L3;
-     * case L4:
-     * return Constants.ReefLayers.L4;
-     * case Idle:
-     * default:
-     * return 0.;
-     * }
-     * }
-     */
 
     public void setEnabled(boolean value) {
         motorEnabled = value;
@@ -155,7 +132,7 @@ public class InnerElevator {
         output = Util.clamp(output, 0.05, 0.85);
         motor.set(ControlMode.PercentOutput, output);
 
-        SmartDashboard.putNumber("elevatorInnerEncoder", currentPos);
+        SmartDashboard.putNumber("elevatorInnerCurrent", currentPos);
         SmartDashboard.putNumber("elevatorInnerTarget", targetPos);
         SmartDashboard.putNumber("elevatorInnerOutput", output);
     }

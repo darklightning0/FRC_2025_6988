@@ -7,8 +7,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import frc.robot.Constants;
 import frc.robot.subsystems.Remote.ShooterMode;
 
-import static frc.robot.Constants.ControllerConstants.operatorJoystickDef;
-
 public class Shooter {
 
 	public final TalonSRX leftRedline = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.Shooter_Left);
@@ -56,10 +54,6 @@ public class Shooter {
 		switch (mode) {
 			case Shoot:
 				return 0.3;
-			case See:
-				return 0.1;
-			case Hold:
-				return -0.05;
 			case Reverse:
 				return -0.2;
 			case Idle:
