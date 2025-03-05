@@ -123,7 +123,7 @@ public class InnerElevator {
         // yerinde durmak icin gereken output
         double keepOutput = 0.45;
         // yukari gitmek icin gereken output
-        double upOutput = Util.lerp(currentPos, 0.90, 0.75);
+        double upOutput = Util.lerp(currentPos, 0.90, 0.80);
 
         if (Math.abs(currentPos - targetPos) > 0.08) {
             boolean mustGoUp = currentPos < targetPos;

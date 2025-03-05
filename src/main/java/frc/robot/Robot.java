@@ -4,9 +4,12 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,6 +36,9 @@ public class Robot extends TimedRobot {
 	@Override
 	public void robotPeriodic() {
 		CommandScheduler.getInstance().run();
+		
+		pigeon2yaw.refresh();
+		SmartDashboard.putNumber("pigeonYaw", pigeon2yaw.getValueAsDouble());
 	}
 
 	@Override
@@ -96,6 +102,7 @@ public class Robot extends TimedRobot {
 	}
 
 	Pigeon2 pigeon2 = new Pigeon2(21);
+	StatusSignal<Angle> pigeon2yaw = pigeon2.getYaw();
 
 	@Override
 	public void teleopInit() {
@@ -104,7 +111,7 @@ public class Robot extends TimedRobot {
 		}
 		m_robotContainer.m_innerElevator.config();
 		m_robotContainer.m_outerElevator.config();
-		m_robotContainer.m_remote.config();
+		m_robotContainer.m_remote.resetTargets();
 	}
 
 	@Override
@@ -140,7 +147,7 @@ public class Robot extends TimedRobot {
 		m_robotContainer.m_outerElevator.setEnabled(true);
 		m_robotContainer.m_outerElevator.mainloop(outerElevatorTarget, m_robotContainer.m_remote.getHomeButtonPressed());
 
-		SmartDashboard.putNumber("pigeonYaw", pigeon2.getYaw().getValueAsDouble());
+
 
 		// Inner Elevator
 		m_robotContainer.m_innerElevator.setEnabled(false);

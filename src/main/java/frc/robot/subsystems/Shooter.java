@@ -55,7 +55,7 @@ public class Shooter {
 			case Shoot:
 				return 0.3;
 			case Reverse:
-				return -0.2;
+				return -0.17;
 			case Idle:
 			default:
 				return 0.;

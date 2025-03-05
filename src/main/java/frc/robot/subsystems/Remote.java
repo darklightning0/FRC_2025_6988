@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.ControllerConstants.driverJoystick;
 import static frc.robot.Constants.ControllerConstants.operatorJoystick;
 import static frc.robot.Constants.ControllerConstants.operatorJoystickDef;
 
@@ -45,15 +44,15 @@ public class Remote {
     ShooterMode shooter_mode = ShooterMode.Idle;
     // static UltrasonicSensor ultrasonicSensor = new UltrasonicSensor(0, 0);
     // ElevatorMode input_elevatorMode = ElevatorMode.Idle;
-    double input_innerElevatorTarget = 0;
-    double input_outerElevatorTarget = 0;
+    public double input_innerElevatorTarget = 0;
+    public double input_outerElevatorTarget = 0;
     boolean elevator_manual = false;
 
     boolean elevator_manualHome = false;
     boolean elevator_manualHomePressed = false;
 
-    DistanceControl innerElevatorProgressControl = new DistanceControl(0.0, 0.98);
-    DistanceControl outerElevatorProgressControl = new DistanceControl(0.0, 0.98);
+    public DistanceControl innerElevatorProgressControl = new DistanceControl(0.0, 0.98);
+    public DistanceControl outerElevatorProgressControl = new DistanceControl(0.0, 0.99);
 
     // Constructor
     // Here we will be creating private constructor
@@ -85,7 +84,9 @@ public class Remote {
         return elevator_manual;
     }
 
-    public void config() {
+    public void resetTargets() {
+        input_innerElevatorTarget = 0;
+		input_outerElevatorTarget = 0;
         innerElevatorProgressControl.resetWithValue(0);
         outerElevatorProgressControl.resetWithValue(0);
     }
@@ -138,6 +139,10 @@ public class Remote {
 
         elevator_manualHomePressed = operatorJoystickDef.getRawButtonPressed(RemoteOperatorButtons.home);
         elevator_manualHome = operatorJoystickDef.getRawButton(RemoteOperatorButtons.home);
+
+        if (elevator_manualHomePressed) {
+            resetTargets();
+        }
 
 
 

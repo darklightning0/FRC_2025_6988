@@ -58,7 +58,7 @@ public class OuterElevator {
             double factor = calculateFactor(currentPos / maxPos);
             // outerMotor.set(TalonSRXControlMode.PercentOutput, output);
 
-            if (Math.abs(targetPos - currentPos) > 0.03) {
+            if (Math.abs(targetPos - currentPos) > 0.08) {
                 if (currentPos < targetPos) {
                     // go up
                     return 0.60 * factor;
@@ -92,16 +92,17 @@ public class OuterElevator {
     public boolean mainloop(double targetPos, boolean shouldHome) {
         boolean bottomSwitchReached = !bottomLimitSwitch.get();
 
-        if (shouldHome) bottomLimitSet = true;
+        if (shouldHome) bottomLimitSet = false;
 
         if (!bottomLimitSet) {
+            // homing
             if (bottomSwitchReached) {
                 encoder.reset();
                 bottomLimitSet = true;
                 motor.set(TalonSRXControlMode.PercentOutput, 0.);
                 return true;
             }
-            motor.set(TalonSRXControlMode.PercentOutput, -0.20);
+            motor.set(TalonSRXControlMode.PercentOutput, -0.30);
             return true;
         }
 
