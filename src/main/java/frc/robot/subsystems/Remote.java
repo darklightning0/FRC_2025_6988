@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.ControllerConstants.operatorJoystick;
 import static frc.robot.Constants.ControllerConstants.operatorJoystickDef;
 
+import edu.wpi.first.wpilibj.Encoder;
 import frc.robot.Constants;
 import frc.robot.Constants.SubsystemConstants.RemoteOperatorButtons;
 import frc.robot.util.DistanceControl;
@@ -126,6 +127,8 @@ public class Remote {
      */
 
     // private static boolean takeoverEnabled = false;
+
+    Encoder innerEncoder = new Encoder(6, 7);
 
     public void mainloop() {
         
