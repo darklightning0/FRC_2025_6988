@@ -87,6 +87,7 @@ public class Remote {
 
     public void config() {
         innerElevatorProgressControl.resetWithValue(0);
+        outerElevatorProgressControl.resetWithValue(0);
     }
 
     public boolean getHomeButtonPressed() {
