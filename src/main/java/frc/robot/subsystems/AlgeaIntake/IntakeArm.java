@@ -5,6 +5,7 @@
 package frc.robot.subsystems.AlgeaIntake;
 
 import frc.robot.Constants;
+import frc.robot.Constants.SubsystemConstants;
 
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -30,12 +31,13 @@ public class IntakeArm {
 	double modeToVoltage(IntakeArmMode mode) {
 		switch (mode) {
 			case Up:
-				return 2.;
+				return SubsystemConstants.Voltage.intakeArmUp;
 			case Down:
-				return -2.;
+				return SubsystemConstants.Voltage.intakeArmDown;
 			case Idle:
 			default:
-				return 0.;
+				return SubsystemConstants.Voltage.intakeArmIdle;
+				
 		}
 	}
 

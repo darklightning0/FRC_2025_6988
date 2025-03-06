@@ -7,17 +7,17 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
+import frc.robot.Constants.SubsystemConstants;
 import frc.robot.util.Util;
 
 public class InnerElevator {
-    private final TalonSRX motor = new TalonSRX(Constants.SubsystemConstants.TalonIDs.SRX.Elevator_Inner);
+    private final TalonSRX motor = new TalonSRX(SubsystemConstants.TalonIDs.SRX.Elevator_Inner);
 
     private final PIDController pid = new PIDController(0, 0, 0);
 
     // private final double maxPos = 0.80; // 0.80 meters
 
-    private final Encoder encoder = new Encoder(6, 7);
+    private final Encoder encoder = new Encoder(SubsystemConstants.AMTEncoder.Elevator_Inner_A, SubsystemConstants.AMTEncoder.Elevator_Inner_B);
 
     // private static SimplePID innerPid = new SimplePID("elevatorInner", 12);
     // private static SimplePID outerPid = new SimplePID("elevatorOuter", 12);
@@ -119,11 +119,11 @@ public class InnerElevator {
         // boolean atTop = currentPos > 0.95;
 
         // asagi gitmek icin gereken output
-        double downOutput = Util.lerp(currentPos, 0.025, 0.020);
+        double downOutput = Util.lerp(currentPos, SubsystemConstants.Output.innerDownMax, SubsystemConstants.Output.innerDownMin);
         // yerinde durmak icin gereken output
         double keepOutput = 0.45;
         // yukari gitmek icin gereken output
-        double upOutput = Util.lerp(currentPos, 0.90, 0.80);
+        double upOutput = Util.lerp(currentPos, SubsystemConstants.Output.innerUpMax, SubsystemConstants.Output.innerUpMin);
 
         if (Math.abs(currentPos - targetPos) > 0.08) {
             boolean mustGoUp = currentPos < targetPos;
@@ -133,7 +133,7 @@ public class InnerElevator {
         }
 
         // hard limit output
-        output = Util.clamp(output, 0.020, 0.90);
+        output = Util.clamp(output, SubsystemConstants.Output.innerDownMin, SubsystemConstants.Output.innerUpMax);
         motor.set(ControlMode.PercentOutput, output);
 
         SmartDashboard.putNumber("elevatorInnerCurrent", currentPos);

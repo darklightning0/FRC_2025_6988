@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import frc.robot.Constants;
+import frc.robot.Constants.SubsystemConstants;
 import frc.robot.subsystems.Remote.ShooterMode;
 
 public class Shooter {
@@ -53,9 +54,9 @@ public class Shooter {
 	double modeToPercent(ShooterMode mode) {
 		switch (mode) {
 			case Shoot:
-				return 0.3;
+				return SubsystemConstants.Output.shooterShoot;
 			case Reverse:
-				return -0.17;
+				return SubsystemConstants.Output.shooterReverse;
 			case Idle:
 			default:
 				return 0.;

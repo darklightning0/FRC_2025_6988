@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.ControllerConstants.driverJoystick;
+import static frc.robot.Constants.ControllerConstants.driverJoystickDef;
 import static frc.robot.Constants.ControllerConstants.operatorJoystick;
 import static frc.robot.Constants.ControllerConstants.operatorJoystickDef;
 
@@ -50,6 +52,8 @@ public class Remote {
 
     boolean elevator_manualHome = false;
     boolean elevator_manualHomePressed = false;
+
+    boolean drive_slow = false;
 
     public DistanceControl innerElevatorProgressControl = new DistanceControl(0.0, 0.98);
     public DistanceControl outerElevatorProgressControl = new DistanceControl(0.0, 0.99);
@@ -127,6 +131,34 @@ public class Remote {
 
     // private static boolean takeoverEnabled = false;
 
+    double getDriveFactor() {
+        if (drive_slow) return 0.6;
+        return 1.0;
+    }
+    double getDriveRotateFactor() {
+        if (drive_slow) return 0.8;
+        return 1.0;
+    }
+
+    public double getDriveX() {
+        if (driverJoystick.isConnected()) {
+            return -driverJoystick.getLeftY() * getDriveFactor();
+        }
+        return 0;
+    }
+    public double getDriveY() {
+        if (driverJoystick.isConnected()) {
+            return -driverJoystick.getLeftX() * getDriveFactor();
+        }
+        return 0;
+    }
+    public double getDriveRotate() {
+        if (driverJoystick.isConnected()) {
+            return -driverJoystick.getRightX() * getDriveRotateFactor();
+        }
+        return 0;
+    }
+
     public void mainloop() {
         
         // Elevator Manual Toggle
@@ -145,12 +177,15 @@ public class Remote {
         }
 
 
+        drive_slow = driverJoystickDef.getRightBumperButton();
+
+
 
         // Elevator
         if (elevator_manual) {
-            double innerElevatorVelocity = Util.deadband(operatorJoystick.getRightY(), 0.12) * -0.3;
+            double innerElevatorVelocity = Util.deadband(operatorJoystick.getRightY(), 0.12) * -0.55;
             input_innerElevatorTarget = innerElevatorProgressControl.mainloop(innerElevatorVelocity);
-            double outerElevatorVelocity = Util.deadband(operatorJoystick.getLeftY(), 0.12) * -0.3;
+            double outerElevatorVelocity = Util.deadband(operatorJoystick.getLeftY(), 0.12) * -0.35;
             input_outerElevatorTarget = outerElevatorProgressControl.mainloop(outerElevatorVelocity);
         } else {
             if (operatorJoystickDef.isConnected()) {

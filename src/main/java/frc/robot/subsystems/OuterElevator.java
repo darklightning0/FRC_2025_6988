@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.Constants.SubsystemConstants;
 import frc.robot.util.Util;
 
 
@@ -17,9 +18,9 @@ public class OuterElevator {
     private final double maxPos = 0.80; // 0.80 meters
 
     // private final Encoder innerEncoder = new Encoder(null, null);
-    private final Encoder encoder = new Encoder(8, 9);
+    private final Encoder encoder = new Encoder(SubsystemConstants.AMTEncoder.Elevator_Outer_A, SubsystemConstants.AMTEncoder.Elevator_Outer_B);
 
-    private final DigitalInput bottomLimitSwitch = new DigitalInput(5);
+    private final DigitalInput bottomLimitSwitch = new DigitalInput(SubsystemConstants.Switch.Elevator_Outer_Bottom);
 
     // private static SimplePID innerPid = new SimplePID("elevatorInner", 12);
     // private static SimplePID outerPid = new SimplePID("elevatorOuter", 12);
@@ -35,11 +36,11 @@ public class OuterElevator {
 
     // progress: 0 ~ 1
     public double calculateFactor(double progress) {
-        return Util.lerp(Util.clamp(progress, 0., 1.), 1., 1.8);
+        return Util.lerp(Util.clamp(progress, 0., 1.), Constants.SubsystemConstants.Output.outerMinFactor, Constants.SubsystemConstants.Output.outerMaxFactor);
     }
 
     public void config() {
-        encoder.setDistancePerPulse(0.005 / 6.284 * 2. * Math.PI / 2048. / 0.454);
+        encoder.setDistancePerPulse(0.005 / 6.284 * 2. * Math.PI / 2048. / 0.550);
         encoder.reset();
 
         bottomLimitSet = false;
@@ -58,20 +59,20 @@ public class OuterElevator {
             double factor = calculateFactor(currentPos / maxPos);
             // outerMotor.set(TalonSRXControlMode.PercentOutput, output);
 
-            if (Math.abs(targetPos - currentPos) > 0.08) {
+            if (Math.abs(targetPos - currentPos) > 0.025) {
                 if (currentPos < targetPos) {
                     // go up
-                    return 0.60 * factor;
+                    return SubsystemConstants.Output.outerUp * factor;
                 } else {
                     // go down
                     if (bottomSwitchReached) return 0;
-                    return -0.35 * factor;
+                    return SubsystemConstants.Output.outerDown * factor;
                 }
             } else {
                 if (targetPos < 0.01) {
                     // go a little down
                     if (bottomSwitchReached) return 0;
-                    return -0.35 * factor;
+                    return SubsystemConstants.Output.outerDown * factor;
                 }
                 return 0;
             }

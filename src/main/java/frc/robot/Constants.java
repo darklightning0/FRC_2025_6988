@@ -73,8 +73,44 @@ public final class Constants {
 		}
 
 		public static class AMTEncoder {
-			public static final int Elevator_Outer = 0;
-			public static final int Elevator_Inner = 0;
+			public static final int Elevator_Inner_A = 6;
+			public static final int Elevator_Inner_B = 7;
+			public static final int Elevator_Outer_A = 8;
+			public static final int Elevator_Outer_B = 9;
+		}
+		
+		public static class Switch {
+			public static final int Elevator_Outer_Bottom = 5;
+		}
+
+		public static class Output {
+			// Outer output amplifier
+			public static final double outerMinFactor = 1.0; // should stay 1
+			public static final double outerMaxFactor = 1.8;
+			
+			// Outer output for down and up
+			public static final double outerDown = -0.35;
+			public static final double outerUp = 0.60;
+			
+			// Inner output for down (innerDownMax when at bottom, innerDownMin at top)
+			public static final double innerDownMin = 0.025;
+			public static final double innerDownMax = 0.030;
+			// Inner output for hold
+			public static final double innerKeep = 0.45;
+			// Inner output for up (innerUpMax when at bottom, innerUpMin when at top)
+			public static final double innerUpMin = 1.00;
+			public static final double innerUpMax = 1.10;
+
+			// Shooter output
+			public static final double shooterShoot = 0.3;
+			public static final double shooterReverse = -0.25;
+		}
+
+		public static class Voltage {
+			// Intake arm voltage
+			public static final double intakeArmUp = 2.0;
+			public static final double intakeArmDown = -2.0;
+			public static final double intakeArmIdle = 0.30;
 		}
 
 	}
