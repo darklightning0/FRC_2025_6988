@@ -130,7 +130,8 @@ public class Remote {
         // Elevator Manual Toggle
         if (operatorJoystickDef.getRightBumperButtonPressed()) {
             elevator_manual = !elevator_manual;
-            innerElevatorProgressControl.resetWithValue(0);
+            innerElevatorProgressControl.resetWithValue(input_innerElevatorTarget);
+            outerElevatorProgressControl.resetWithValue(input_outerElevatorTarget);
         }
 
 
