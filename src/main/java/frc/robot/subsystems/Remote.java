@@ -128,8 +128,6 @@ public class Remote {
 
     // private static boolean takeoverEnabled = false;
 
-    Encoder innerEncoder = new Encoder(6, 7);
-
     public void mainloop() {
         
         // Elevator Manual Toggle
